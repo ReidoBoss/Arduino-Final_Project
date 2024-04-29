@@ -1,0 +1,50 @@
+#include <Keypad.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+const byte ROWS = 4; // Number of rows on the keypad
+const byte COLS = 4; // Number of columns on the keypad
+
+char keys[ROWS][COLS] = {
+  {'1','2','3','A'},
+  {'4','5','6','B'},
+  {'7','8','9','C'},
+  {'*','0','#','D'}
+};
+
+byte rowPins[ROWS] = {9, 8, 7, 6}; // Connect to the row pinouts of the keypad
+byte colPins[COLS] = {5, 4, 3, 2}; // Connect to the column pinouts of the keypad
+
+Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
+
+LiquidCrystal_I2C lcd(0x27, 16, 2); // Address 0x27, 16 columns and 2 rows
+
+void setup() {
+  lcd.init(); // Initialize the LCD
+  lcd.backlight(); // Turn on the backlight
+  lcd.clear(); // Clear the LCD screen
+}
+
+void loop() {
+  char key = keypad.getKey(); // Read the keypad
+
+  if (key != NO_KEY) {
+    static int cursorX = 0;
+    static int cursorY = 0;
+
+    if (key == '\n' || cursorX == 16) {
+      cursorX = 0;
+      cursorY++;
+      if (cursorY == 2) {
+        cursorY = 0;
+        lcd.clear();
+      }
+      lcd.setCursor(cursorX, cursorY);
+    }
+
+    if (key != '\n') {
+      lcd.print(key); // Print the pressed key to the LCD
+      cursorX++;
+    }
+  }
+}

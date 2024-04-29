@@ -1,0 +1,125 @@
+#include <WiFi.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include <AsyncWebSocket.h>
+
+const char* ssid = "S A G A R I N O";
+const char* password = "741895623";
+
+AsyncWebServer server(80);
+AsyncWebSocket ws("/ws");
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.println("Connecting to WiFi...");
+  }
+  
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  ws.onEvent(onWsEvent);
+  server.addHandler(&ws);
+  server.begin();
+}
+
+void loop() {
+  ws.cleanupClients(); 
+  if (Serial.available() > 0) {
+    String data = Serial.readStringUntil('\n');
+    ws.textAll(data);
+  }
+  delay(50); 
+}
+
+void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
+  switch (type) {
+    case WS_EVT_CONNECT:
+      // Serial.println("WebSocket client connected");
+      break;
+    case WS_EVT_DISCONNECT:
+      // Serial.println("WebSocket client disconnected");
+      break;
+    case WS_EVT_DATA:
+      Serial.println("WebSocket data received");
+
+      Serial.write(data, len);
+      Serial.println(); 
+      break;
+    case WS_EVT_ERROR:
+      Serial.println("WebSocket error");
+      break;
+  }
+}
+
+// my vue.js
+
+<template>
+    <div>
+      <input type="text" v-model="messageToSend" placeholder="Type a message...">
+      <button @click="sendMessage">Send</button>
+      <h1>WebSocket Messages:</h1>
+      <ul>
+        <li v-for="message in messages" :key="message.id">{{ message.content }}</li>
+      </ul>
+    </div>
+  </template>
+  
+  <script setup>
+  import { ref, onMounted } from 'vue';
+  
+  const messages = ref([]);
+  const messageToSend = ref('');
+  
+  let ws;
+  
+  // Function to handle incoming messages from the WebSocket server
+  function handleIncomingMessage(event) {
+    const data = event.data;
+    messages.value.push({ id: messages.value.length + 1, content: data });
+  }
+  
+  // Function to send a message to the WebSocket server
+  function sendMessage() {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(messageToSend.value);
+      messageToSend.value = ''; // Clear the input field after sending the message
+    }
+  }
+  
+  // Establish WebSocket connection when the component is mounted
+  onMounted(() => {
+    // Replace 'ws://172.16.30.13/ws' with your WebSocket server URL
+    ws = new WebSocket('ws://172.16.30.13/ws');
+  
+    // Listen for WebSocket open event
+    ws.onopen = () => {
+      console.log('Connected to WebSocket server');
+    };
+  
+    // Listen for WebSocket message event
+    ws.onmessage = handleIncomingMessage;
+  
+    // Listen for WebSocket close event
+    ws.onclose = () => {
+      console.log('Disconnected from WebSocket server');
+    };
+  
+    // Listen for WebSocket error event
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+  
+    // Clean up when the component is unmounted
+    return () => {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
+    };
+  });
+  </script>
+  

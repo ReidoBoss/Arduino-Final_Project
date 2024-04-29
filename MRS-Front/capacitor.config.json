@@ -1,0 +1,13 @@
+{
+  "appId": "com.megasecurity.app",
+  "appName": "megasecurity",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "dist",
+  "server": {
+    "allowNavigation": []
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}

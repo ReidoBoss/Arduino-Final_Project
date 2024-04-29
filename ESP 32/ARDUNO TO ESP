@@ -1,0 +1,63 @@
+// ARDUNO
+#include <Wire.h>
+#include <Keypad.h>
+
+const byte ROWS = 4; // Number of rows on the keypad
+const byte COLS = 4; // Number of columns on the keypad
+
+char keys[ROWS][COLS] = {
+  {'1','2','3','A'},
+  {'4','5','6','B'},
+  {'7','8','9','C'},
+  {'*','0','#','D'}
+};
+
+byte rowPins[ROWS] = {10, 8, 7, 6}; // Connect to the row pinouts of the keypad
+byte colPins[COLS] = {5, 4, 3, 2}; // Connect to the column pinouts of the keypad
+
+Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
+
+void setup() {
+  Wire.begin(); // Initialize I2C communication
+}
+
+void loop() {
+  char key = keypad.getKey(); // Read the keypad
+
+  if (key != NO_KEY) {
+    Wire.beginTransmission(8); // Start transmission to the ESP32 (replace 8 with the ESP32's I2C address)
+    Wire.write(key); // Send the pressed key via I2C
+    Wire.endTransmission(); // End transmission
+    delay(100); // Optional delay to prevent sending too fast
+  }
+}
+
+//ESP 32
+
+#include <Wire.h>
+
+void setup() {
+  Wire.begin(8); // Initialize I2C communication with address 8
+  Wire.onReceive(receiveEvent); // Register the receive event
+  Serial.begin(9600); // Initialize serial communication for debugging
+}
+
+void loop() {
+  // Your main code goes here
+}
+
+void receiveEvent(int bytesReceived) {
+  while (Wire.available()) { // Loop through all received bytes
+    char receivedChar = Wire.read(); // Read the received character
+    Serial.print("Received: ");
+    Serial.println(receivedChar); // Print the received character
+    // Process the received data as needed
+  }
+}
+
+
+// WIRINGS: 
+// ARDUINO TO ESP32:
+// A4 - 21
+// A5 - 22
+// GND - GND

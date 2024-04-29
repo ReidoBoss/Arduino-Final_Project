@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .general-tab {
+    @apply hover:bg-secondary;
+    @apply hover:text-primary;
+    @apply w-[90%];
+    @apply pl-10;
+    @apply rounded-l-lg;
+  }
+
+  .active-tab {
+    @apply bg-secondary;
+    @apply w-[90%];
+    @apply pl-10;
+    @apply rounded-l-lg;
+    @apply text-primary;
+  }
+
+  .general-tabs {
+    @apply bg-white;
+    @apply h-full;
+    @apply cursor-pointer;
+    @apply w-[18.5%];
+    @apply text-sm;
+    @apply flex;
+    @apply items-center;
+    @apply justify-center;
+    @apply font-semibold;
+    @apply rounded-t-md;
+    @apply border-2;
+    @apply border-r-stroke;
+    @apply border-t-stroke;
+    @apply border-l-stroke;
+    @apply hover:bg-active;
+  }
+
+  .active-tabs {
+    @apply bg-active;
+    @apply h-full;
+    @apply cursor-pointer;
+    @apply w-[18.5%];
+    @apply text-sm;
+    @apply flex;
+    @apply items-center;
+    @apply justify-center;
+    @apply font-semibold;
+    @apply rounded-t-md;
+    @apply border-2;
+    @apply border-b-0;
+    @apply border-r-stroke;
+    @apply border-t-stroke;
+    @apply border-l-stroke;
+  }
+
+  .alert-normal {
+    @apply text-secondary;
+  }
+  .alert-hover {
+    @apply text-primary;
+  }
+}
