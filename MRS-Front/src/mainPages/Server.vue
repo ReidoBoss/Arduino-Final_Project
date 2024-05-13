@@ -37,7 +37,7 @@ const messages = ref([]);
     }
     else if(data== "Max is Reached!"){
       sendEmail("Too many times","Somebody tried to access your door","Robber!");
-      submitRecording();
+      submitRecording("Intruder");
     }
     console.log(data);
     messages.value.push({ id: messages.value.length + 1, content: data });

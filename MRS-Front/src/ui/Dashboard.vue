@@ -32,8 +32,9 @@
           </button>
         </div>
         <div class="w-full">
-          <p class="text-xl font-bold text-gray-800">Live Camera</p>
-          <img :src="videoStreamUrl" alt="Video Stream" class="w-full rounded shadow-md" />
+          <img :src="videoStreamUrl" alt="Video Stream" class="w-full rounded shadow-md" @error="handleCameraError" />
+          <!-- Display error message if camera stream fails -->
+          <p v-if="cameraError" class="text-red-500">{{ cameraError }}</p>
         </div>
         <div class="w-full bg-gray-200 rounded p-4">
           <p class="text-gray-800 font-bold">Chat</p>
@@ -72,7 +73,12 @@ const videoStreamUrl = ref(`http://${cam_ip}/`);
   const messages = ref([]);
   const messageToSend = ref('');
   let ws;
-  
+  const cameraError = ref('');
+
+// Method to handle camera stream error
+const handleCameraError = () => {
+    cameraError.value = 'Failed to load camera stream. Please check your connection or camera settings.';
+};
   function handleIncomingMessage(event) {
     const data = event.data;
     if(data == "Letter A Pressed!"){

@@ -54,6 +54,11 @@ const router = createRouter({
       name: "Configure",
       component: () => import("../ui/Configure.vue"),
     },
+    {
+      path: "/test",
+      name: "test",
+      component: () => import("../mainPages/Video.vue"),
+    },
 
   ],
 });
